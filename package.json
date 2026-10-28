@@ -1,0 +1,51 @@
+{
+  "name": "opencode-quota",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Quota status bar for OpenCode subscription providers",
+  "license": "GPL-3.0-or-later",
+  "keywords": [
+    "opencode",
+    "opencode-go",
+    "quota",
+    "tui",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pobedinsky-pb/opencode-quota.git"
+  },
+  "homepage": "https://github.com/pobedinsky-pb/opencode-quota#readme",
+  "bugs": {
+    "url": "https://github.com/pobedinsky-pb/opencode-quota/issues"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./tui": "./src/tui.tsx"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/format.test.ts"
+  },
+  "dependencies": {
+    "@opencode/plugin": "2.2.0"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.7.0",
+    "@opentui/solid": ">=0.7.0",
+    "solid-js": ">=1.9.0"
+  },
+  "devDependencies": {
+    "@opencode/client": "2.2.0",
+    "@opentui/core": "0.7.0",
+    "@opentui/solid": "0.7.0",
+    "@types/node": "24.12.2",
+    "solid-js": "1.9.12",
+    "typescript": "5.9.3"
+  }
+}
