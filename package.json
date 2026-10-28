@@ -14,11 +14,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pobedinsky-pb/opencode-quota.git"
+    "url": "git+https://github.com/iouws/opencode-quota.git"
   },
-  "homepage": "https://github.com/pobedinsky-pb/opencode-quota#readme",
+  "homepage": "https://github.com/iouws/opencode-quota#readme",
   "bugs": {
-    "url": "https://github.com/pobedinsky-pb/opencode-quota/issues"
+    "url": "https://github.com/iouws/opencode-quota/issues"
   },
   "exports": {
     ".": "./src/index.ts",

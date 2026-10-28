@@ -56,7 +56,7 @@ repository and keeps your existing `cli.json` settings.
 ```text
 Install the OpenCode Quota plugin for my TUI.
 
-Repository: https://github.com/pobedinsky-pb/opencode-quota.git
+Repository: https://github.com/iouws/opencode-quota.git
 Target: ~/.config/opencode/plugins/opencode-quota
 Windows target: %USERPROFILE%\.config\opencode\plugins\opencode-quota
 
@@ -77,13 +77,13 @@ Do this:
 Clone the plugin into the OpenCode plugins directory:
 
 ```sh
-git clone https://github.com/pobedinsky-pb/opencode-quota.git ~/.config/opencode/plugins/opencode-quota
+git clone https://github.com/iouws/opencode-quota.git ~/.config/opencode/plugins/opencode-quota
 ```
 
 On Windows PowerShell:
 
 ```powershell
-git clone https://github.com/pobedinsky-pb/opencode-quota.git "$env:USERPROFILE\.config\opencode\plugins\opencode-quota"
+git clone https://github.com/iouws/opencode-quota.git "$env:USERPROFILE\.config\opencode\plugins\opencode-quota"
 ```
 
 Add the plugin to `~/.config/opencode/cli.json`
@@ -123,7 +123,7 @@ it. Adding the package to `opencode.json` is not required.
 ### Local development
 
 ```sh
-git clone https://github.com/pobedinsky-pb/opencode-quota.git ~/opencode-quota
+git clone https://github.com/iouws/opencode-quota.git ~/opencode-quota
 cd ~/opencode-quota
 npm install
 npm run typecheck
