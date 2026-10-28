@@ -26,6 +26,8 @@ windows, absolute reset times, and the plugin settings.
 - **Stretches** to the chat pane width; `/quota` stays at the right edge.
 - **Respects the layout**: below session tabs, before the right sidebar, never
   over the transcript.
+- **Home strip**: a full-width bar above the footer on the main screen, on
+  launch and when no session is open.
 - **Only for subscription models**: hidden when the selected model is not from
   OpenCode Go (configurable).
 - **No API key** stored by the plugin: it reads the local OpenCode server's
@@ -164,8 +166,8 @@ win until you reset them with `shift+r`.
   **Show sidebar**, or set `session.sidebar` to `"auto"` in `cli.json`.
 - With `tabs.layout: "vertical"` the top strip starts to the right of the tab
   rail.
-- On the home screen the footer shows a compact
-  `Go 5h 93% · 3h 57m` contribution instead.
+- On the home screen a full-width strip is always shown above the footer,
+  regardless of the session placement. The old compact footer item is gone.
 
 Press `p` in `/quota` to cycle **screen → composer → right**.
 

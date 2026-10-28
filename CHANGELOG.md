@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Added a full-width quota strip above the home footer, shown on launch and
+  whenever the main screen is open.
+- Removed the small `Go 5h …` footer item; the home strip replaces it.
+
 ## 0.1.1
 
 - Added the `right` placement: the quota block can live in the session

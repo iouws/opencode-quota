@@ -339,44 +339,6 @@ function QuotaSidebar(props: { controller: Controller }) {
   )
 }
 
-/** A compact contribution to the home footer. */
-function QuotaHome(props: { controller: Controller }) {
-  const controller = props.controller
-  const theme = controller.context.theme
-  const [now, setNow] = createSignal(Date.now())
-  const timer = setInterval(() => setNow(Date.now()), 30_000)
-  onCleanup(() => clearInterval(timer))
-
-  const meter = createMemo(() => {
-    if (!visible(controller)) return
-    return windowMeter(controller.info(), controller.settings().window)
-  })
-
-  return (
-    <Show when={meter()}>
-      {(value) => {
-        const remaining = () => remainingPercent(value().percent)
-        const color = () => meterColor(controller, value())
-        return (
-          <box flexDirection="row" gap={1} flexShrink={0} onMouseUp={controller.open}>
-            <text fg={theme.text.muted} wrapMode="none">
-              Go
-            </text>
-            <text fg={color()} wrapMode="none">
-              {WINDOW_LABEL[controller.settings().window]} {value().limited ? "limit" : `${Math.round(remaining())}%`}
-            </text>
-            <Show when={controller.settings().showReset && !value().limited}>
-              <text fg={theme.text.muted} wrapMode="none">
-                · {formatCountdown(value().resetsAt, now())}
-              </text>
-            </Show>
-          </box>
-        )
-      }}
-    </Show>
-  )
-}
-
 function MeterRow(props: { controller: Controller; window: QuotaWindow; now: number }) {
   const controller = props.controller
   const theme = controller.context.theme
@@ -677,8 +639,8 @@ export default Plugin.define({
         },
       }),
       context.ui.slot({
-        append: "home.footer.status",
-        render: () => <QuotaHome controller={controller} />,
+        before: "home.footer",
+        render: () => <QuotaStrip controller={controller} />,
       }),
       context.ui.slot({
         append: "sidebar.content",
