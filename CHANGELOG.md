@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3
+
+- Moved the home strip inside the centered home column, just below the prompt
+  and hints, instead of attaching it to the bottom footer.
+- The home strip now matches the prompt width; the session strip stays hidden
+  on the home screen.
+
 ## 0.1.2
 
 - Added a full-width quota strip above the home footer, shown on launch and

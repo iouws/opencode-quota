@@ -171,6 +171,83 @@ function ChatProbe(props: {
   )
 }
 
+type HomeRect = {
+  readonly left: number
+  readonly top: number
+  readonly width: number
+}
+
+/**
+ * The home strip belongs inside the centered home column, just below the
+ * prompt and its hints, not attached to the bottom footer. Measure the prompt
+ * wrapper from the footer slot and let the app overlay place the strip there.
+ */
+function HomeProbe(props: {
+  readonly active: () => boolean
+  readonly onRect: (rect: HomeRect | undefined) => void
+}) {
+  let node: BoxRenderable | undefined
+  const dimensions = useTerminalDimensions()
+  let last = ""
+
+  const update = () => {
+    if (!props.active()) {
+      if (last !== "inactive") {
+        last = "inactive"
+        props.onRect(undefined)
+      }
+      return
+    }
+    if (!node) return
+    const footer = node.parent
+    const parent = footer?.parent
+    if (!footer || !parent) return
+    const siblings = parent.getChildren()
+    const index = siblings.indexOf(footer)
+    const content = index > 0 ? siblings[index - 1] : undefined
+    if (!content) return
+
+    let prompt: Renderable | undefined
+    for (const child of content.getChildren()) {
+      const layout = child.getLayout()
+      if (layout.width < 40 || layout.width > 90 || layout.height < 3 || layout.height > 14) continue
+      if (!prompt || layout.top > prompt.getLayout().top) prompt = child
+    }
+
+    const target = prompt ?? content
+    const layout = target.getLayout()
+    const position = absolutePosition(target)
+    const width = prompt ? layout.width : Math.min(75, layout.width - 4)
+    const top = prompt ? position.top + layout.height + 1 : position.top + layout.height - 4
+    const key = `${position.left}:${top}:${width}`
+    if (key === last) return
+    last = key
+    props.onRect({ left: position.left, top, width })
+  }
+
+  createEffect(() => {
+    props.active()
+    dimensions()
+    update()
+  })
+
+  const timer = setInterval(update, 500)
+  onCleanup(() => {
+    clearInterval(timer)
+    props.onRect(undefined)
+  })
+
+  return (
+    <box
+      height={0}
+      ref={(value) => {
+        node = value
+        update()
+      }}
+    />
+  )
+}
+
 /** The meter stretches only after the row's real width is known. */
 function useMeasuredWidth(node: () => BoxRenderable | undefined) {
   const [width, setWidth] = createSignal(0)
@@ -607,6 +684,7 @@ export default Plugin.define({
     const onSession = () => context.ui.router.current().type === "session"
     const probes = new Map<string, ChatRect>()
     const [chatRect, setChatRect] = createSignal<ChatRect>()
+    const [homeRect, setHomeRect] = createSignal<HomeRect>()
     const updateProbe = (id: string, rect: ChatRect | undefined) => {
       if (rect) probes.set(id, rect)
       else probes.delete(id)
@@ -641,7 +719,7 @@ export default Plugin.define({
       }),
       context.ui.slot({
         before: "home.footer",
-        render: () => <QuotaStrip controller={controller} />,
+        render: () => <HomeProbe active={() => true} onRect={setHomeRect} />,
       }),
       context.ui.slot({
         append: "sidebar.content",
@@ -654,7 +732,27 @@ export default Plugin.define({
       context.ui.slot({
         prepend: "app",
         render: () => (
-          <Show when={onSession() && settings().placement === "screen" && visible(controller) && chatRect()}>
+          <Show when={!homeRect() && onSession() && settings().placement === "screen" && visible(controller) && chatRect()}>
+            {(rect) => (
+              <box
+                position="absolute"
+                left={rect().left}
+                top={rect().top}
+                width={rect().width}
+                height={1}
+                zIndex={1000}
+                backgroundColor={context.theme.background.base}
+              >
+                <QuotaStrip controller={controller} />
+              </box>
+            )}
+          </Show>
+        ),
+      }),
+      context.ui.slot({
+        prepend: "app",
+        render: () => (
+          <Show when={visible(controller) && homeRect()}>
             {(rect) => (
               <box
                 position="absolute"
