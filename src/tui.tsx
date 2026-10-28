@@ -22,7 +22,7 @@ import {
   type QuotaWindow,
 } from "./format"
 import { hasGo, isGoProvider, windowMeter, type Meter } from "./quota"
-import { DEFAULT_SETTINGS, mergeSettings, normalizeSettings, type Settings } from "./settings"
+import { DEFAULT_SETTINGS, mergeSettings, nextPlacement, normalizeSettings, type Settings } from "./settings"
 
 interface Controller {
   readonly context: Plugin.Context
@@ -276,6 +276,69 @@ function QuotaStrip(props: { controller: Controller }) {
   )
 }
 
+/** A block for the session sidebar (the right-hand Context/MCP pane). */
+function QuotaSidebar(props: { controller: Controller }) {
+  const controller = props.controller
+  const theme = controller.context.theme
+  const [now, setNow] = createSignal(Date.now())
+  const timer = setInterval(() => setNow(Date.now()), 30_000)
+  onCleanup(() => clearInterval(timer))
+
+  const [node, setNode] = createSignal<BoxRenderable>()
+  const measured = useMeasuredWidth(node)
+  const meter = createMemo(() => {
+    if (!visible(controller)) return
+    return windowMeter(controller.info(), controller.settings().window)
+  })
+
+  return (
+    <Show when={meter()}>
+      {(value) => {
+        const remaining = () => remainingPercent(value().percent)
+        const color = () => meterColor(controller, value())
+        const label = () => WINDOW_LABEL[controller.settings().window]
+        const percent = () => (value().limited ? "limit reached" : `${formatPercentLeft(value().percent)} left`)
+        const width = () => Math.max(8, (measured() || 32) - label().length - percent().length - 2)
+        const parts = () => barParts(remaining(), width(), controller.settings().barStyle)
+        return (
+          <box ref={setNode} width="100%" flexDirection="column" gap={0} onMouseUp={controller.open}>
+            <box flexDirection="row" justifyContent="space-between">
+              <text fg={theme.text.base} wrapMode="none">
+                <b>Quota</b>
+              </text>
+              <text fg={theme.text.muted} wrapMode="none">
+                OpenCode Go · {label()}
+              </text>
+            </box>
+            <box flexDirection="row" gap={1}>
+              <text fg={theme.text.muted} wrapMode="none">
+                {label()}
+              </text>
+              <text wrapMode="none">
+                <span style={{ fg: color() }}>{parts().filled}</span>
+                <span style={{ fg: theme.text.muted }}>{parts().empty}</span>
+              </text>
+              <text fg={color()} wrapMode="none">
+                {percent()}
+              </text>
+            </box>
+            <Show when={controller.settings().showReset && !value().limited}>
+              <text fg={theme.text.muted} wrapMode="none">
+                resets in {formatCountdown(value().resetsAt, now())}
+              </text>
+            </Show>
+            <Show when={value().limited}>
+              <text fg={color()} wrapMode="none">
+                waiting for reset
+              </text>
+            </Show>
+          </box>
+        )
+      }}
+    </Show>
+  )
+}
+
 /** A compact contribution to the home footer. */
 function QuotaHome(props: { controller: Controller }) {
   const controller = props.controller
@@ -397,12 +460,9 @@ function QuotaDialog(props: { controller: Controller }) {
       },
       {
         bind: "p",
-        title: "Toggle placement",
+        title: "Cycle placement",
         group: "Quota",
-        run: () =>
-          controller.update({
-            placement: controller.settings().placement === "composer" ? "screen" : "composer",
-          }),
+        run: () => controller.update({ placement: nextPlacement(controller.settings().placement) }),
       },
       {
         bind: "a",
@@ -619,6 +679,14 @@ export default Plugin.define({
       context.ui.slot({
         append: "home.footer.status",
         render: () => <QuotaHome controller={controller} />,
+      }),
+      context.ui.slot({
+        append: "sidebar.content",
+        render: () => (
+          <Show when={settings().placement === "right"}>
+            <QuotaSidebar controller={controller} />
+          </Show>
+        ),
       }),
       context.ui.slot({
         prepend: "app",

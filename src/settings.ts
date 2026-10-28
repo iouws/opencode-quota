@@ -1,6 +1,6 @@
 import { BAR_STYLES, type BarStyle, type QuotaWindow } from "./format"
 
-export type Placement = "composer" | "screen"
+export type Placement = "composer" | "screen" | "right"
 
 export interface Settings {
   window: QuotaWindow
@@ -25,7 +25,7 @@ export const DEFAULT_SETTINGS: Settings = {
   refreshSeconds: 60,
 }
 
-const PLACEMENTS: readonly Placement[] = ["composer", "screen"]
+const PLACEMENTS: readonly Placement[] = ["screen", "composer", "right"]
 const WINDOW_VALUES: readonly QuotaWindow[] = ["rolling", "weekly", "monthly"]
 
 /** Only the known plugin options, with invalid values ignored. */
@@ -50,6 +50,11 @@ export function normalizeSettings(input: Readonly<Record<string, unknown>> | und
     result.refreshSeconds = Math.min(600, Math.max(15, Math.round(input.refreshSeconds)))
   }
   return result
+}
+
+export function nextPlacement(placement: Placement): Placement {
+  const index = PLACEMENTS.indexOf(placement)
+  return PLACEMENTS[(index + 1) % PLACEMENTS.length] ?? "screen"
 }
 
 export function clampWidth(width: number) {

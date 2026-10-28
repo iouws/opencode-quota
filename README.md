@@ -143,7 +143,7 @@ Options in `plugins[].options`:
 | `barStyle` | `bars`, `blocks`, `dots`, `ascii` | `bars` | Meter characters |
 | `barWidth` | `0` or `4`–`30` | `0` | Meter width in cells; `0` stretches to the chat width |
 | `showReset` | `true`, `false` | `true` | Show the reset countdown |
-| `placement` | `composer`, `screen` | `screen` | Reserved row at the top of the chat pane, or a strip above the prompt |
+| `placement` | `composer`, `screen`, `right` | `screen` | Reserved row at the top of the chat pane, a strip above the prompt, or a block in the session sidebar |
 | `onlyActiveProvider` | `true`, `false` | `true` | Hide when the selected model is not from OpenCode Go |
 | `refreshSeconds` | `15`–`600` | `60` | How often to reload the allowance |
 
@@ -158,11 +158,25 @@ win until you reset them with `shift+r`.
   row at the top of the chat pane. The transcript starts below it.
 - `composer` puts the strip directly above the prompt. It never touches the
   transcript, but it is lower on the screen.
-- With `tabs.layout: "vertical"` the strip starts to the right of the tab rail.
+- `right` puts a quota block in the session sidebar (the Context/MCP pane). It
+  appears under the built-in sidebar sections and is visible when the sidebar
+  is open. On narrow terminals open it from the command palette with
+  **Show sidebar**, or set `session.sidebar` to `"auto"` in `cli.json`.
+- With `tabs.layout: "vertical"` the top strip starts to the right of the tab
+  rail.
 - On the home screen the footer shows a compact
   `Go 5h 93% · 3h 57m` contribution instead.
 
-Press `p` in `/quota` to switch placement.
+Press `p` in `/quota` to cycle **screen → composer → right**.
+
+When `right` is selected, the sidebar block looks like this:
+
+```text
+Quota                  OpenCode Go · 5h
+5h  ▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯  93% left
+resets in 3h 57m
+at Oct 29, 02:50
+```
 
 ## Use
 
@@ -172,7 +186,7 @@ Press `p` in `/quota` to switch placement.
 | `1` / `2` / `3` | Select the 5-hour, weekly or monthly window |
 | `s` | Cycle the meter style |
 | `t` | Show or hide the reset countdown |
-| `p` | Switch `screen` / `composer` |
+| `p` | Cycle `screen` / `composer` / `right` |
 | `a` | Toggle “only when the selected model is from Go” |
 | `w` | Cycle the meter width |
 | `r` | Refresh immediately |
