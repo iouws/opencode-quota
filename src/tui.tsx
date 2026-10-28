@@ -604,6 +604,7 @@ export default Plugin.define({
       open,
     }
 
+    const onSession = () => context.ui.router.current().type === "session"
     const probes = new Map<string, ChatRect>()
     const [chatRect, setChatRect] = createSignal<ChatRect>()
     const updateProbe = (id: string, rect: ChatRect | undefined) => {
@@ -653,7 +654,7 @@ export default Plugin.define({
       context.ui.slot({
         prepend: "app",
         render: () => (
-          <Show when={settings().placement === "screen" && visible(controller) && chatRect()}>
+          <Show when={onSession() && settings().placement === "screen" && visible(controller) && chatRect()}>
             {(rect) => (
               <box
                 position="absolute"
